@@ -5,101 +5,425 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboards | HP1CRM</title>
   <style>
+    :root {
+      --bg-main: #0b1120;
+      --bg-surface: #111827;
+      --bg-card: #162033;
+      --bg-card-hover: #1c2942;
+      --border: #24324d;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #0ea5e9;
+      --accent-soft: rgba(14, 165, 233, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
       margin: 0;
-      padding: 2.5rem 1rem;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 42%),
+        var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
     }
-    .container {
-      max-width: 760px;
+
+    /* Cabecera */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 17, 32, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1040px;
       margin: 0 auto;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
-    h1 {
-      margin-top: 0;
-      font-size: 1.75rem;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: var(--text-main);
     }
+
+    .brand-logo-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Recorta el espacio en blanco inferior/derecho del lienzo original */
+      object-position: 18% 32%;
+      transform: scale(1.45);
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #7dd3fc;
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38bdf8;
+    }
+
+    /* Contenido principal */
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2.25rem 1.25rem 3.5rem;
+    }
+
+    .hero {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero h1 {
+      margin: 0 0 0.35rem;
+      font-size: clamp(1.5rem, 3vw, 2.05rem);
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.96rem;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 240px;
+      padding: 0.7rem 0.95rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+    }
+
+    .count-badge {
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    /* Grid de tarjetas */
     .grid {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
       gap: 1rem;
-      margin-top: 1.5rem;
     }
+
     a.card {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
       padding: 1.25rem;
-      border-radius: 10px;
-      background: #1e293b;
+      border-radius: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       color: inherit;
       text-decoration: none;
-      border: 1px solid #334155;
+      transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
     }
+
     a.card:hover {
-      border-color: #38bdf8;
+      transform: translateY(-2px);
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
     }
-    .title {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 0.25rem;
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
     }
-    .desc {
-      font-size: 0.92rem;
+
+    .card-title {
+      font-weight: 650;
+      font-size: 1.05rem;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .card-arrow {
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: transform 0.18s ease, color 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    a.card:hover .card-arrow {
+      color: #7dd3fc;
+      transform: translate(2px, -2px);
+    }
+
+    .card-desc {
+      margin-top: 0.45rem;
+      font-size: 0.89rem;
+      line-height: 1.45;
       color: #cbd5e1;
-      margin-bottom: 0.35rem;
     }
-    .url {
-      font-size: 0.85rem;
-      color: #94a3b8;
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card-url {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-tag {
+      padding: 0.18rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(148, 163, 184, 0.12);
+      color: #cbd5e1;
+      font-size: 0.74rem;
+      flex-shrink: 0;
+    }
+
+    .state-box {
+      grid-column: 1 / -1;
+      padding: 2rem;
+      border-radius: 14px;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border);
+      text-align: center;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Dashboards Disponibles</h1>
-    <p>Selecciona un proyecto para abrir su panel:</p>
-    <div id="repos-grid" class="grid">Cargando repositorios...</div>
-  </div>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./">
+        <span class="brand-logo-wrap">
+          <img
+            id="header-logo"
+            class="brand-logo"
+            src="./logo-blanco.png"
+            alt="Logo HP1CRM"
+          />
+        </span>
+        <span>
+          <span class="brand-title">HP1CRM Dashboards</span><br />
+          <span class="brand-subtitle">dashboards.hp1crm.org</span>
+        </span>
+      </a>
+
+      <div class="header-meta">
+        <span class="status-pill">
+          <span class="status-dot"></span>
+          Sincronizado con GitHub
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Paneles y Proyectos</h1>
+        <p>Acceso centralizado a los repositorios publicados en GitHub Pages.</p>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Filtrar proyectos">
+      <input
+        id="search-input"
+        class="search-input"
+        type="search"
+        placeholder="Buscar por nombre o descripción..."
+        autocomplete="off"
+      />
+      <div id="repo-count" class="count-badge">Cargando...</div>
+    </section>
+
+    <section id="repos-grid" class="grid" aria-live="polite">
+      <div class="state-box">Cargando repositorios desde GitHub...</div>
+    </section>
+  </main>
 
   <script>
-    // Cambia a "https://api.github.com/orgs/NOMBRE_ORG/repos?per_page=100" si es una organización
     const API_URL = "https://api.github.com/users/hp1crmserver/repos?per_page=100&sort=updated";
     const ROOT_REPO = "hp1crmserver.github.io";
 
+    let allRepos = [];
+
+    function renderRepos(list) {
+      const grid = document.getElementById("repos-grid");
+      const countEl = document.getElementById("repo-count");
+
+      countEl.textContent = `${list.length} ${list.length === 1 ? "proyecto" : "proyectos"}`;
+
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="state-box">No se encontraron repositorios que coincidan con la búsqueda.</div>`;
+        return;
+      }
+
+      grid.innerHTML = "";
+      list.forEach((repo) => {
+        const card = document.createElement("a");
+        card.className = "card";
+        card.href = `./${repo.name}/`;
+
+        const descHtml = repo.description
+          ? `<div class="card-desc">${escapeHtml(repo.description)}</div>`
+          : `<div class="card-desc">Repositorio publicado en subruta del dominio.</div>`;
+
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <div class="card-title">${escapeHtml(repo.name)}</div>
+              <span class="card-arrow">↗</span>
+            </div>
+            ${descHtml}
+          </div>
+          <div class="card-footer">
+            <span class="card-url">dashboards.hp1crm.org/${escapeHtml(repo.name)}/</span>
+            <span class="card-tag">${repo.language ? escapeHtml(repo.language) : "Web"}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
     async function cargarRepositorios() {
       const grid = document.getElementById("repos-grid");
+      const countEl = document.getElementById("repo-count");
+
       try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error("No se pudo consultar la API de GitHub");
         const repos = await res.json();
 
-        // Filtra el repo raíz, forks y archivados (y opcionalmente repos sin Pages si has_pages es false)
-        const filtrados = repos.filter(repo =>
-          repo.name.toLowerCase() !== ROOT_REPO.toLowerCase() &&
-          !repo.fork &&
-          !repo.archived
+        allRepos = repos.filter(
+          (repo) =>
+            repo.name.toLowerCase() !== ROOT_REPO.toLowerCase() &&
+            !repo.fork &&
+            !repo.archived
         );
 
-        if (filtrados.length === 0) {
-          grid.innerHTML = "<p>No hay repositorios secundarios disponibles.</p>";
-          return;
-        }
-
-        grid.innerHTML = "";
-        filtrados.forEach(repo => {
-          const card = document.createElement("a");
-          card.className = "card";
-          card.href = `./${repo.name}/`;
-          card.innerHTML = `
-            <div class="title">${repo.name}</div>
-            ${repo.description ? `<div class="desc">${repo.description}</div>` : ""}
-            <div class="url">dashboards.hp1crm.org/${repo.name}/</div>
-          `;
-          grid.appendChild(card);
-        });
+        renderRepos(allRepos);
       } catch (err) {
-        grid.innerHTML = `<p>Error al cargar repositorios: ${err.message}</p>`;
+        countEl.textContent = "Error";
+        grid.innerHTML = `<div class="state-box">Error al cargar repositorios: ${escapeHtml(err.message)}</div>`;
       }
     }
+
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) {
+        renderRepos(allRepos);
+        return;
+      }
+      const filtrados = allRepos.filter(
+        (repo) =>
+          repo.name.toLowerCase().includes(q) ||
+          (repo.description && repo.description.toLowerCase().includes(q)) ||
+          (repo.language && repo.language.toLowerCase().includes(q))
+      );
+      renderRepos(filtrados);
+    });
 
     cargarRepositorios();
   </script>
